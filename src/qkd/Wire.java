@@ -5,24 +5,35 @@
  */
 package qkd;
 
+import java.util.Arrays;
+
 /**
  *
  * @author waltersquires
  */
 public class Wire {
     private String name;
-    float probability;
+    private int dimension;
+    float[] probability;
     
     public Wire()
     {
         name = "Default";
-        probability = -1;
+        dimension = 0;
+        probability = new float[dimension];
+        Arrays.fill(probability,-1);
     }
     
-    public Wire(String temp)
+    public Wire(String temp, int d)
     {
         name = temp;
-        probability = -1;
+        dimension = d;
+        probability = new float[dimension];
+        Arrays.fill(probability,-1);    }
+    
+    public int getDimensions()
+    {
+        return dimension;
     }
     
     public String getName()
@@ -30,13 +41,13 @@ public class Wire {
         return name;  
     }
     
-    public void setProbability(float newOdds)
+    public void setProbability(int index,float newOdds)
     {
-        probability = newOdds;
+        probability[index] = newOdds;
     }
     
-    public float getProbability()
+    public float getProbability(int index)
     {
-        return probability;
+        return probability[index];
     }
 }

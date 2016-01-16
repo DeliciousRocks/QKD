@@ -5,6 +5,8 @@
  */
 package qkd;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -12,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
  * @author waltersquires
  */
 public class DensityListRepresentation extends javax.swing.JPanel {
+    private String[] modifiers = {"conditional op H", "op H","trace out","measure","project"};
     private String name;
     private DensityList data;
 
@@ -24,39 +27,59 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         initComponents();
         data = new DensityList();
         name = data.getName();
-        updateAlice(data.getAlice());
+        updateWires(data);
     }
     //From existing
      public DensityListRepresentation(DensityList temp) {
         initComponents();
         data = temp;
         name = data.getName();
-        updateAlice(data.getAlice());
+        updateWires(data);
     }
 
-    public void updateAlice(Alice model)
+     
+     
+    public void updateWires(DensityList model)
     {
         DefaultTableModel newModel = (new DefaultTableModel(
             new Object [][] {
           
             },
             new String [] {
-                "Wire", "Probability"
+                
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        ));
+        
         for(Wire tempWire:model.getWires())
         {
-            Object[] tempData = {tempWire.getName(),tempWire.getProbability()};
-            newModel.addRow(tempData);
-           
+            newModel.addColumn(tempWire.getName());
+        }
+        newModel.addColumn("aKey");
+        newModel.addColumn("Probability");
+                
+        
+        //*
+        int count = 0;
+        for(Wire tempWire:model.getWires())
+        {
+            for(int i=0; i<tempWire.getDimensions();i++)
+            {
+                ArrayList<Object> tempRow =new ArrayList();
+                for(Wire tempWirey:model.getWires())
+                 {
+                 tempRow.add(0);
+                 }
+                tempRow.add(0);
+                tempRow.add(-1);
+
+                    
+                Object[] tempData = tempRow.toArray();
+                tempData[count] = i;
+                newModel.addRow(tempData);
+
+
+            }
+           count++;
           //System.out.println(tempWire.getName());
           //javax.swing.JLabel tempLabel = new javax.swing.JLabel();
           //tempLabel.setText(tempWire.getName());
@@ -65,6 +88,7 @@ public class DensityListRepresentation extends javax.swing.JPanel {
           //  wires.add(tempWire);
           //wireNames.append(tempWire.getName()+"\n");
         }
+        //*/
         wires.setModel(newModel);
     }
     
@@ -72,10 +96,14 @@ public class DensityListRepresentation extends javax.swing.JPanel {
     {
         float sum =0;
         int rows = wires.getRowCount();
+        int columns = wires.getColumnCount()-2;
         for(int i = 0; i <rows; i++)
         {
-        sum += (float)wires.getModel().getValueAt(i, 1);
-        data.getAlice().setProb((String)wires.getModel().getValueAt(i, 0),(float)wires.getModel().getValueAt(i, 1)); 
+            for(int j = 0; j<columns;j++)
+            {
+        sum += (float)wires.getModel().getValueAt(i, j);
+        data.setProb((String)wires.getModel().getColumnName(j),i,(float)wires.getModel().getValueAt(i, j)); 
+            }
         }
         if (sum==1)
             return true;
@@ -98,9 +126,17 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         wires = new javax.swing.JTable();
         repEve = new javax.swing.JPanel();
+        jComboBox1 = new javax.swing.JComboBox();
         eveLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         repBob = new javax.swing.JPanel();
         bobLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        addModPre = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        addModPost = new javax.swing.JButton();
 
         repAlice.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         repAlice.setLayout(new javax.swing.BoxLayout(repAlice, javax.swing.BoxLayout.Y_AXIS));
@@ -113,14 +149,14 @@ public class DensityListRepresentation extends javax.swing.JPanel {
 
         wires.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+                {null, null, null}
             },
             new String [] {
-                "Wire", "Probability"
+                "Wire", "Probability", "AKey"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true
+                false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -139,21 +175,35 @@ public class DensityListRepresentation extends javax.swing.JPanel {
 
         repEve.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         eveLabel.setText("Eve");
+
+        jLabel1.setText("Attack Target");
 
         javax.swing.GroupLayout repEveLayout = new javax.swing.GroupLayout(repEve);
         repEve.setLayout(repEveLayout);
         repEveLayout.setHorizontalGroup(
             repEveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(repEveLayout.createSequentialGroup()
-                .addComponent(eveLabel)
-                .addGap(0, 55, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(repEveLayout.createSequentialGroup()
+                .addGroup(repEveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(eveLabel)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         repEveLayout.setVerticalGroup(
             repEveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(repEveLayout.createSequentialGroup()
                 .addComponent(eveLabel)
-                .addGap(0, 84, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         repBob.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -172,40 +222,222 @@ public class DensityListRepresentation extends javax.swing.JPanel {
             repBobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(repBobLayout.createSequentialGroup()
                 .addComponent(bobLabel)
-                .addGap(0, 84, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel2.setText("Modifiers");
+
+        addModPre.setText("Add");
+        addModPre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addModPreActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addModPre, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(addModPre))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel3.setText("Modifiers");
+
+        addModPost.setText("Add");
+        addModPost.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addModPostActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addModPost, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(addModPost))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(130, 130, 130)
+                .addGap(67, 67, 67)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addComponent(repEve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(69, 69, 69)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(68, 68, 68)
                 .addComponent(repBob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repBob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(repEve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(repAlice, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                    .addComponent(repEve, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(repBob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(117, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public String addModifier()
+    {
+        String choice = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "Which modifier will you add?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    modifiers,
+                    modifiers[0]
+                    );
+        if(choice.equals(modifiers[0]))
+        {
+            ArrayList<String> names = new ArrayList();
+            for(Wire temp: data.getWires())
+            {
+                names.add(temp.getName());
+            }
+           Object[] n = names.toArray();
+           String target = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "Which wire is the target?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    n,
+                    n[0]
+                    ); 
+           String conditionA = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "Which wire should be checked?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    n,
+                    n[0]
+                    ); 
+           Object[] logic = {"=",">",">=","<","<=","!="};
+            String conditionB = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "What logical operator should be used?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    logic,
+                    logic[0]
+                    ); 
+            
+            int value=-1;
+        do
+        {
+            String conditionC = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "What is the value to be checked for?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "0");
+                    
+            try
+            {
+                int i = Integer.parseInt(conditionC);
+                if(i>=0)
+                    value =Integer.parseInt(conditionC);
+            }
+            catch (NumberFormatException e)
+            {
+                    
+            }
+        }while(value==-1);
+        
+        return "apply " +choice+ " to " + target + " if ("+conditionA+conditionB+value+")";
+           
+        }
+        
+        else if(choice.equals(modifiers[1]))
+        {
+            
+        }
+        
+        else if(choice.equals(modifiers[2]))
+        {
+            
+        }
+        
+        else if(choice.equals(modifiers[3]))
+        {
+            
+        }
+        
+        else if(choice.equals(modifiers[4]))
+        {
+            
+        }
+
+        return null;
+    }
+    
+    private void addModPreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModPreActionPerformed
+    addModifier();
+    }//GEN-LAST:event_addModPreActionPerformed
+
+    private void addModPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModPostActionPerformed
+     addModifier();  // TODO add your handling code here:
+    }//GEN-LAST:event_addModPostActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addModPost;
+    private javax.swing.JButton addModPre;
     private javax.swing.JPanel aliceContent;
     private javax.swing.JLabel aliceLabel;
     private javax.swing.JLabel bobLabel;
     private javax.swing.JLabel eveLabel;
+    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel repAlice;
     private javax.swing.JPanel repBob;

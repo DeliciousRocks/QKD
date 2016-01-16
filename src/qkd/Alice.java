@@ -12,47 +12,13 @@ import java.util.ArrayList;
  * @author waltersquires
  */
 public class Alice {
-    ArrayList<Wire> connections;
+    Wire aKey;
     
     public Alice()
     {
-        connections = new ArrayList();
-        connections.add(new Wire("Fish"));
-        connections.add(new Wire("Sandwitch"));
+       aKey = new Wire(); 
 
     }
     
-    public boolean addConnection(Wire newConnection)
-    {
-        return connections.add(newConnection);
-    }
-    
-    public boolean removeConnection(Wire removeConnection)
-    {
-        return connections.remove(removeConnection);
-    }
-    
-    public Wire getWire(String wireName)
-    {
-        for(Wire search: connections)
-        {
-            if(search.getName().equals(wireName))
-                return search;
-        }
-        return null;
-    }
-    
-    public void setProb(String wireName,float newVal)
-    {
-         for(Wire search: connections)
-        {
-            if(search.getName().equals(wireName))
-                search.setProbability(newVal);
-        }
-    }
-    
-    public ArrayList<Wire> getWires()
-    {
-        return connections;
-    }
+  
 }

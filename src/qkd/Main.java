@@ -5,6 +5,9 @@
  */
 package qkd;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author waltersquires
@@ -77,7 +80,70 @@ public class Main extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newListButtonActionPerformed
-DensityListRepresentation temp = new DensityListRepresentation();
+        ArrayList<Wire> tempWires = new ArrayList();
+        int subspaces = -1;
+        do
+        {
+            String s = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "How many subspaces will this density list have?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "2");
+                    
+            try
+            {
+                int i = Integer.parseInt(s);
+                if(i>0)
+                    subspaces =Integer.parseInt(s);
+            }
+            catch (NumberFormatException e)
+            {
+                    
+            }
+        }while(subspaces==-1);
+for(int i = 0; i<subspaces; i++)
+{
+    int subSize = -1;
+    int number = i+1;
+    String subspace = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "What is the name of subspace "+ number +" ?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "");
+    
+    do
+        {
+            String s = (String)JOptionPane.showInputDialog(
+                    GUI.popOut,
+                    "What is the dimension of "+subspace+"?",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "2");
+                    
+            try
+            {
+                int j = Integer.parseInt(s);
+                if(j>0)
+                    subSize =Integer.parseInt(s);
+            }
+            catch (NumberFormatException e)
+            {
+                    
+            }
+        }while(subSize==-1);
+    tempWires.add(new Wire(subspace,subSize));
+   
+}
+DensityList t = new DensityList(tempWires);
+DensityListRepresentation temp = new DensityListRepresentation(t);
 holder.addNewDensityList(temp);
 holder.displayListBuilder();
 

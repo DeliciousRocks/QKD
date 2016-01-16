@@ -5,14 +5,16 @@
  */
 package qkd;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author waltersquires
  */
 public class Eve {
-    
+    ArrayList<Wire> targets;
     public Eve()
     {
-        
+        targets = new ArrayList();
     }
 }

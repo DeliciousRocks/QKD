@@ -10,7 +10,7 @@ package qkd;
  * @author waltersquires
  */
 public class Bob {
-    
+    Wire bKey;
     public Bob()
     {
         

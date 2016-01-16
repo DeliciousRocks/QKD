@@ -5,11 +5,14 @@
  */
 package qkd;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author waltersquires
  */
 public class DensityList {
+    private ArrayList<Wire> connections;
     private String name;
     private Alice alice;
     private Bob bob;
@@ -19,11 +22,69 @@ public class DensityList {
     //for new
     public DensityList()
     {
+        connections = new ArrayList();
+
+        
         name = "Default";
         alice = new Alice();
         bob = new Bob();
         eve = new Eve();
         isPrimary = true;
+    }
+    
+      public DensityList(ArrayList<Wire> wires)
+    {
+        connections = wires;
+
+        
+        name = "Default";
+        alice = new Alice();
+        bob = new Bob();
+        eve = new Eve();
+        isPrimary = true;
+    }
+    
+      public boolean addConnection(Wire newConnection)
+    {
+        return connections.add(newConnection);
+    }
+    
+    public boolean removeConnection(Wire removeConnection)
+    {
+        return connections.remove(removeConnection);
+    }
+    
+    public Wire getWire(String wireName)
+    {
+        for(Wire search: connections)
+        {
+            if(search.getName().equals(wireName))
+                return search;
+        }
+        return null;
+    }
+    
+    public void setProb(String wireName,int index,float newVal)
+    {
+         for(Wire search: connections)
+        {
+            if(search.getName().equals(wireName))
+                search.setProbability(index,newVal);
+        }
+    }
+    
+    public ArrayList<Wire> getWires()
+    {
+        return connections;
+    }
+    
+    public String toString()
+    {
+        String outName = name+".txt";
+        String def = "define H as QFT 2"; //Not sure what this does, need to double check
+        String createSpace = "create space (";
+        
+        return null;
     }
     
     public String getName()

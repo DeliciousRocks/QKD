@@ -13,6 +13,7 @@ public class GUI extends javax.swing.JFrame {
     /**
      * Creates new form GUI
      */
+    public static javax.swing.JFrame popOut;
     public GUI() {
         initComponents();
         menu.setMaker(this);
