@@ -5,6 +5,8 @@
  */
 package qkd;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author waltersquires
@@ -16,12 +18,15 @@ public class GUI extends javax.swing.JFrame {
     public static javax.swing.JFrame popOut;
     public GUI() {
         initComponents();
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         menu.setMaker(this);
         listBuilder.setMaker(this);
         displayMain();
+        //this.setResizable(false);
 
     }
     
+  
     public void displayMain()
     {
         menu.setVisible(true);
