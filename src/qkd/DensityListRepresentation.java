@@ -8,6 +8,7 @@ package qkd;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -31,12 +32,9 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         data = new DensityList();
         name = data.getName();
         updateWires(data);
-        ArrayList<String> names = new ArrayList();
-        for (Wire temp : data.getWires()) {
-                names.add(temp.getName());
-        }
-        Object[] n = names.toArray();
-        targets.setModel(new JComboBox<>(n).getModel());
+        updateCombo(targets);
+
+        
     }
 
     //From existing
@@ -46,8 +44,44 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         data = temp;
         name = data.getName();
         updateWires(data);
+        updateCombo(targets);
     }
 
+    public void updateCombo(JComboBox temp)
+    {
+        DefaultComboBoxModel tempModel = (DefaultComboBoxModel)temp.getModel();
+        for (Wire wire : data.getWires()) {
+                tempModel.addElement(wire.getName());
+        }
+        temp.setModel(tempModel);
+    }
+    
+     public String toString()
+    {
+        String outName = name+".txt";
+        String def = "define H as QFT 2"; //Not sure what this does, need to double check
+        String createSpace = "create space (";
+        String probs = getProbs();
+        String preMods = getMods(1);
+        String attackTarget = "attack ("+(String)targets.getSelectedItem()+")";
+        String postMods = getMods(2);
+        String isPrimary = "";
+        if (primary.isSelected())
+            isPrimary=  "save as primary";
+        
+        String output = outName + "\n \n" +
+                        def + "\n" +
+                        createSpace + "\n" +
+                        probs + "\n" +
+                        preMods + "\n" +
+                        attackTarget + "\n" +
+                        postMods+ "\n" +
+                        isPrimary+ "\n" +
+                        "end";
+        
+        return null;
+    }
+    
     public void updateWires(DensityList model) {
         DefaultTableModel newModel = (new DefaultTableModel(
                 new Object[][]{},
@@ -200,9 +234,13 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         modifierList = new javax.swing.JTable();
         removeMod = new javax.swing.JToggleButton();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        addModPost = new javax.swing.JButton();
+        primary = new javax.swing.JCheckBox();
+        modPanel2 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        addModPre1 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        modifierList1 = new javax.swing.JTable();
+        removeMod1 = new javax.swing.JToggleButton();
 
         repAlice.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         repAlice.setLayout(new javax.swing.BoxLayout(repAlice, javax.swing.BoxLayout.Y_AXIS));
@@ -241,7 +279,6 @@ public class DensityListRepresentation extends javax.swing.JPanel {
 
         repEve.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        targets.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         targets.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 targetsActionPerformed(evt);
@@ -261,10 +298,11 @@ public class DensityListRepresentation extends javax.swing.JPanel {
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(repEveLayout.createSequentialGroup()
-                .addGroup(repEveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(eveLabel)
-                    .addComponent(targets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(eveLabel)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(repEveLayout.createSequentialGroup()
+                .addComponent(targets, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         repEveLayout.setVerticalGroup(
             repEveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -292,7 +330,7 @@ public class DensityListRepresentation extends javax.swing.JPanel {
             repBobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(repBobLayout.createSequentialGroup()
                 .addComponent(bobLabel)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 13, Short.MAX_VALUE))
         );
 
         modPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -362,34 +400,78 @@ public class DensityListRepresentation extends javax.swing.JPanel {
                 .addComponent(removeMod))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        jLabel3.setText("Modifiers");
-
-        addModPost.setText("Add");
-        addModPost.addActionListener(new java.awt.event.ActionListener() {
+        primary.setText("Primary Density List?");
+        primary.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addModPostActionPerformed(evt);
+                primaryActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        modPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel4.setText("Modifiers");
+
+        addModPre1.setText("Add");
+        addModPre1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addModPre1ActionPerformed(evt);
+            }
+        });
+
+        modifierList1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Modifiers"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(modifierList1);
+
+        removeMod1.setText("Remove");
+        removeMod1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeMod1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout modPanel2Layout = new javax.swing.GroupLayout(modPanel2);
+        modPanel2.setLayout(modPanel2Layout);
+        modPanel2Layout.setHorizontalGroup(
+            modPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(modPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(addModPost, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(modPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, modPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(removeMod1))
+                    .addGroup(modPanel2Layout.createSequentialGroup()
+                        .addGroup(modPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addGroup(modPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                                .addComponent(addModPre1)))
+                        .addContainerGap())))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(addModPost))
-                .addGap(0, 0, Short.MAX_VALUE))
+        modPanel2Layout.setVerticalGroup(
+            modPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(modPanel2Layout.createSequentialGroup()
+                .addGroup(modPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(addModPre1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(removeMod1))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -397,39 +479,60 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(67, 67, 67)
-                .addComponent(modPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(67, 67, 67)
+                        .addComponent(modPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(primary))
                 .addGap(44, 44, 44)
                 .addComponent(repEve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 400, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(68, 68, 68)
+                .addGap(57, 57, 57)
                 .addComponent(repBob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(50, 50, 50)
+                .addComponent(modPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(275, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(repBob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(repEve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(modPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(repAlice, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(modPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
+                                .addComponent(primary))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(repEve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(repBob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    public String getMods()
+    public String getMods(int x)
     {
         String modList = "";
-        for(int i = 0; i< modifierList.getRowCount();i++)
+        javax.swing.JTable extract = null;
+        if (x==1)
+            extract = modifierList;
+        else
+            extract = modifierList1;
+            
+        for(int i = 0; i< extract.getRowCount();i++)
         {
-            modList+= modifierList.getModel().getValueAt(i, 0)+"\n";
+            modList+= extract.getModel().getValueAt(i, 0);
+            if(i!=extract.getRowCount())
+                modList+= "\n";
         }
         return modList;
     }
@@ -528,10 +631,6 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         modifierList.setModel(modModel);
     }//GEN-LAST:event_addModPreActionPerformed
 
-    private void addModPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModPostActionPerformed
-        addModifier();  // TODO add your handling code here:
-    }//GEN-LAST:event_addModPostActionPerformed
-
     private void removeModActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeModActionPerformed
         DefaultTableModel modModel = (DefaultTableModel) modifierList.getModel();
         modModel.removeRow(modifierList.getSelectedRow());
@@ -543,23 +642,46 @@ public class DensityListRepresentation extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_targetsActionPerformed
 
+    private void primaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_primaryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_primaryActionPerformed
+
+    private void addModPre1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModPre1ActionPerformed
+  ArrayList<Object> tempRow = new ArrayList();
+        tempRow.add(addModifier());
+        Object[] tempData = tempRow.toArray();
+        //newModel.addRow(tempData);
+
+        DefaultTableModel modModel = (DefaultTableModel) modifierList1.getModel();
+        modModel.addRow(tempData);
+        modifierList1.setModel(modModel);    }//GEN-LAST:event_addModPre1ActionPerformed
+
+    private void removeMod1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMod1ActionPerformed
+ DefaultTableModel modModel = (DefaultTableModel) modifierList1.getModel();
+        modModel.removeRow(modifierList1.getSelectedRow());
+        modifierList1.setModel(modModel);    }//GEN-LAST:event_removeMod1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addModPost;
     private javax.swing.JButton addModPre;
+    private javax.swing.JButton addModPre1;
     private javax.swing.JPanel aliceContent;
     private javax.swing.JLabel aliceLabel;
     private javax.swing.JLabel bobLabel;
     private javax.swing.JLabel eveLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel modPanel1;
+    private javax.swing.JPanel modPanel2;
     private javax.swing.JTable modifierList;
+    private javax.swing.JTable modifierList1;
+    private javax.swing.JCheckBox primary;
     private javax.swing.JToggleButton removeMod;
+    private javax.swing.JToggleButton removeMod1;
     private javax.swing.JPanel repAlice;
     private javax.swing.JPanel repBob;
     private javax.swing.JPanel repEve;

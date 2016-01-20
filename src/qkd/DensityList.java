@@ -78,17 +78,7 @@ public class DensityList {
         return connections;
     }
     
-    public String toString(DensityListRepresentation holder)
-    {
-        String outName = name+".txt";
-        String def = "define H as QFT 2"; //Not sure what this does, need to double check
-        String createSpace = "create space (";
-        String probs = holder.getProbs();
-        String preMods = holder.getMods();
-        
-        
-        return null;
-    }
+   
     
     public String getName()
     {
